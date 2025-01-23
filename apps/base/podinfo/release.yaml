@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: podinfo
@@ -8,12 +8,24 @@ spec:
   chart:
     spec:
       chart: podinfo
+      version: "6.x"
       sourceRef:
         kind: HelmRepository
         name: podinfo
-        namespace: flux-system
+        namespace: podinfo
   values:
     replicaCount: 2
     ingress:
       enabled: true
-      className: nginx 
+      className: nginx
+      rules:
+        - host: podinfo.local
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: podinfo
+                    port:
+                      number: 9898 
